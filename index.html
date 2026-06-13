@@ -195,11 +195,10 @@
             
             // เช็คว่าเป็นวันหยุดหรือไม่ (เช็คคำว่า OFF ตัวเล็กหรือใหญ่ก็ได้)
             if (text.trim().toUpperCase() === "OFF") {
+                // แก้ปัญหาตัวอักษรเลื่อนตอนแคปรูป โดยเปลี่ยนจาก flex เป็น inline-block แทน
                 return `
-                    <div class="h-full flex items-center justify-center p-4">
-                        <div class="relative transform -rotate-12 border-4 border-red-500 rounded-lg px-6 py-2 bg-red-50 opacity-90">
-                            <span class="text-4xl font-extrabold text-red-600 tracking-widest drop-shadow-sm">OFF</span>
-                        </div>
+                    <div class="inline-block transform -rotate-12 border-4 border-red-500 rounded-lg px-8 py-3 bg-red-50 opacity-90 shadow-sm m-4">
+                        <span class="text-4xl font-extrabold text-red-600 tracking-widest drop-shadow-sm">OFF</span>
                     </div>
                 `;
             }
@@ -235,6 +234,14 @@
                     const bgClass = isEven ? 'bg-white' : 'bg-blue-50/50'; // สลับสีแถวให้ดูง่าย
                     const dateText = (row.date && row.date !== "undefined") ? row.date : "";
                     
+                    // ดึงข้อความมาเตรียมเช็ค
+                    const driverText = (row.driver_tasks && String(row.driver_tasks) !== "undefined") ? String(row.driver_tasks) : "";
+                    const messengerText = (row.messenger_tasks && String(row.messenger_tasks) !== "undefined") ? String(row.messenger_tasks) : "";
+                    
+                    // เช็คสถานะ: ถ้าเป็น "OFF" ให้จัดกึ่งกลางเซลล์ (align-middle), แต่ถ้าเป็นข้อความปกติให้ชิดบน (align-top)
+                    const driverAlign = (driverText.trim().toUpperCase() === "OFF") ? "align-middle text-center" : "align-top";
+                    const messengerAlign = (messengerText.trim().toUpperCase() === "OFF") ? "align-middle text-center" : "align-top";
+                    
                     const tr = document.createElement('tr');
                     tr.className = `${bgClass} border-b-2 border-blue-100 hover:bg-yellow-50 transition-colors duration-200 group`;
                     
@@ -244,11 +251,11 @@
                             <!-- เส้นทองคั่นตกแต่งแบบในรูปไวท์บอร์ด -->
                             <div class="absolute bottom-0 right-[-2px] w-1 h-full bg-yellow-400 group-hover:bg-yellow-500 transition-colors"></div>
                         </td>
-                        <td class="p-4 border-r-2 border-blue-100 align-top">
-                            ${formatCellContent(row.driver_tasks)}
+                        <td class="p-4 border-r-2 border-blue-100 ${driverAlign}">
+                            ${formatCellContent(driverText)}
                         </td>
-                        <td class="p-4 align-top">
-                            ${formatCellContent(row.messenger_tasks)}
+                        <td class="p-4 ${messengerAlign}">
+                            ${formatCellContent(messengerText)}
                         </td>
                     `;
                     tbody.appendChild(tr);
