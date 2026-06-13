@@ -70,9 +70,8 @@
                 <div class="flex items-center gap-4 mb-4 md:mb-0">
                     <!-- กล่องใส่โลโก้ -->
                     <div class="w-16 h-16 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center p-2 shadow-sm overflow-hidden">
-                        <!-- ใส่ลิงก์ตรง (Direct Link) ของรูปโลโก้ที่นี่ -->
-                        <!-- หมายเหตุ: URL ต้องลงท้ายด้วย .png หรือ .jpg เพื่อให้ระบบแคปรูปดึงไปใช้ได้ -->
-                        <img src="https://i.postimg.cc/qR8vHq1X/image.png" alt="Logo" class="w-full h-full object-contain" crossorigin="anonymous" onerror="this.src='https://placehold.co/100x100/eeeeee/999999?text=LOGO'">
+                        <!-- เปลี่ยนลิงก์โลโก้เป็นลิงก์ที่ถูกต้อง -->
+                        <img src="https://i.postimg.cc/WbMg5TWb/LOGO-VIO1.png" alt="Logo" class="w-full h-full object-contain" crossorigin="anonymous" onerror="this.src='https://placehold.co/100x100/eeeeee/999999?text=LOGO'">
                     </div>
                     <div>
                         <h1 class="text-2xl font-bold text-gray-900 tracking-tight">ตารางปฏิบัติงานแผนกจัดส่ง</h1>
@@ -86,9 +85,15 @@
 
             <!-- สถานะกำลังโหลด (Loading State) -->
             <div id="loading-state" class="flex flex-col items-center justify-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
-            <p id="error-message" class="text-red-600 mt-2 text-center px-4"></p>
-            <button onclick="fetchData()" class="mt-4 px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">ลองใหม่อีกครั้ง</button>
-        </div>
+                <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
+                <h2 class="text-center text-gray-700 text-xl font-semibold">กำลังโหลดข้อมูล...</h2>
+            </div>
+
+            <!-- สถานะข้อผิดพลาด (Error State) เพิ่มส่วนนี้เข้ามา -->
+            <div id="error-state" class="hidden flex flex-col items-center justify-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
+                <p id="error-message" class="text-red-600 mt-2 text-center px-4"></p>
+                <button onclick="fetchData()" class="mt-4 px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">ลองใหม่อีกครั้ง</button>
+            </div>
 
         <!-- ตารางข้อมูลหลัก (Main Data Table) -->
         <div id="dashboard-content" class="hidden">
@@ -158,7 +163,10 @@
         // ฟังก์ชันดึงข้อมูลจาก Google Sheets ผ่าน API
         async function fetchData() {
             document.getElementById('loading-state').classList.remove('hidden');
-            document.getElementById('error-state').classList.add('hidden');
+            // เพิ่มการตรวจเช็คก่อนว่ามี element นี้อยู่หรือไม่เพื่อป้องกัน error
+            const errorStateEl = document.getElementById('error-state');
+            if (errorStateEl) errorStateEl.classList.add('hidden');
+            
             document.getElementById('dashboard-content').classList.add('hidden');
             document.getElementById('downloadBtn').classList.add('hidden');
 
@@ -172,8 +180,12 @@
             } catch (error) {
                 console.error("Error fetching data:", error);
                 document.getElementById('loading-state').classList.add('hidden');
-                document.getElementById('error-state').classList.remove('hidden');
-                document.getElementById('error-message').innerText = "โปรดตรวจสอบ URL ของ Apps Script หรือสิทธิ์การเข้าถึง";
+                
+                // แสดงผล error state
+                if (errorStateEl) {
+                    errorStateEl.classList.remove('hidden');
+                    document.getElementById('error-message').innerText = "โหลดข้อมูลไม่สำเร็จ โปรดตรวจสอบ URL ของ Apps Script หรือสิทธิ์การเข้าถึง (" + error.message + ")";
+                }
             }
         }
 
