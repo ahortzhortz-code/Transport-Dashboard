@@ -112,7 +112,7 @@
                                 </th>
                                 <th class="p-5 border-r-2 border-blue-600 w-2/5 text-center shadow-inner">
                                     <div class="text-2xl font-bold tracking-wider">Driver</div>
-                                    <div class="text-blue-200 font-medium">( พี่ต๋อง )</div>
+                                    <div class="text-blue-200 font-medium">( พี่ต้อง )</div>
                                 </th>
                                 <th class="p-5 w-2/5 text-center shadow-inner">
                                     <div class="text-2xl font-bold tracking-wider">Messenger</div>
@@ -195,10 +195,16 @@
             
             // เช็คว่าเป็นวันหยุดหรือไม่ (เช็คคำว่า OFF ตัวเล็กหรือใหญ่ก็ได้)
             if (text.trim().toUpperCase() === "OFF") {
-                // แก้ปัญหาตัวอักษรเลื่อนตอนแคปรูป โดยเปลี่ยนจาก flex เป็น inline-block แทน
+                // แก้ปัญหาตัวอักษรเลื่อนตอนแคปรูป โดยเปลี่ยนไปใช้ SVG วาดรูปแทน HTML DOM
+                // html2canvas จะสามารถอ่านและจัดวาง SVG ได้แม่นยำกว่าการใช้ CSS Transform
                 return `
-                    <div class="inline-block transform -rotate-12 border-4 border-red-500 rounded-lg px-8 py-3 bg-red-50 opacity-90 shadow-sm m-4">
-                        <span class="text-4xl font-extrabold text-red-600 tracking-widest drop-shadow-sm">OFF</span>
+                    <div class="flex justify-center items-center w-full" style="min-height: 120px;">
+                        <svg width="180" height="100" viewBox="0 0 180 100" xmlns="http://www.w3.org/2000/svg">
+                            <g transform="rotate(-12 90 50)">
+                                <rect x="20" y="20" width="140" height="60" rx="10" fill="#fef2f2" stroke="#ef4444" stroke-width="4"/>
+                                <text x="90" y="62" font-family="'Kanit', Arial, sans-serif" font-size="36" font-weight="900" fill="#dc2626" text-anchor="middle" letter-spacing="4">OFF</text>
+                            </g>
+                        </svg>
                     </div>
                 `;
             }
@@ -284,6 +290,9 @@
             document.getElementById('timestamp').innerText = new Date().toLocaleString('th-TH');
 
             setTimeout(() => {
+                // เลื่อนหน้าจอกลับไปบนสุด เพื่อป้องกันบัค html2canvas จับพิกัดแกน Y เพี้ยนเวลาที่ผู้ใช้ Scroll จอลงมา
+                window.scrollTo(0, 0);
+
                 // ซ่อนปุ่ม และจัดเตรียมพื้นที่ให้สวยงามก่อนถ่ายภาพ
                 btn.style.display = 'none'; 
                 watermark.classList.remove('hidden'); // แสดงเวลาที่อัพเดทรูปล่างตาราง
