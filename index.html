@@ -48,8 +48,13 @@
         }
         /* คลาสพิเศษเวลาแคปหน้าจอ */
         .capture-mode {
-            padding: 20px;
-            background-color: #ffffff;
+            padding: 32px !important;
+            background-color: #f3f4f6 !important; /* พื้นหลังสีเทาอ่อนเหมือนหน้าเว็บ */
+            border-radius: 0px !important;
+        }
+        /* เพิ่มคลาสสำหรับจัดระเบียบตอนปกติ */
+        .capture-wrapper {
+            transition: all 0.3s ease;
         }
     </style>
 </head>
@@ -57,16 +62,11 @@
 
     <div id="main-container" class="max-w-6xl mx-auto">
         
-        <!-- ส่วนหัว (Header) -->
-        <header class="mb-8 flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <div class="flex items-center gap-4 mb-4 md:mb-0">
-                <!-- เปลี่ยนจากไอคอนเดิม เป็นโลโก้ -->
-                <div class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 bg-gray-50 rounded-xl overflow-hidden shadow-sm border border-gray-100 p-1 flex items-center justify-center">
-                    <!-- แก้ไขลิงก์: เปลี่ยนมาใช้ Direct Link จาก Postimages -->
-                    <img src="https://i.postimg.cc/4mxYdkRr/logo.png" alt="Company Logo" class="max-w-full max-h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/100x100/eeeeee/999999?text=LOGO';">
-                </div>
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900">ตารางปฏิบัติงานแผนกจัดส่ง</h1>
+        <!-- ห่อหุ้มส่วนที่ต้องการแคปรูปทั้งหมด (Header + Table + Timestamp) -->
+        <div id="capture-area" class="capture-wrapper">
+
+            <!-- ส่วนหัว (Header) -->
+            <header class="mb-8 flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <p class="text-gray-500 text-sm">อัพเดทข้อมูลอัตโนมัติจากระบบส่วนกลาง</p>
                 </div>
             </div>
@@ -92,7 +92,7 @@
 
         <!-- ตารางข้อมูลหลัก (Main Data Table) -->
         <div id="dashboard-content" class="hidden">
-            <div class="bg-white rounded-2xl shadow-lg border-2 border-blue-800 overflow-hidden relative" id="capture-area">
+            <div class="bg-white rounded-2xl shadow-lg border-2 border-blue-800 overflow-hidden relative">
                 <!-- ขอบเส้นตกแต่งคล้ายกระดาน -->
                 <div class="absolute top-0 bottom-0 left-0 w-2 bg-blue-800"></div>
                 <div class="absolute top-0 bottom-0 right-0 w-2 bg-blue-800"></div>
@@ -121,13 +121,15 @@
                         </tbody>
                     </table>
                 </div>
-                
-                <!-- โลโก้หรือลายน้ำสำหรับตอนเซฟรูป -->
-                <div class="hidden print-logo text-right p-3 bg-gray-50 border-t border-gray-200 text-gray-400 text-xs">
-                    อัพเดทล่าสุดเมื่อ: <span id="timestamp"></span>
-                </div>
             </div>
         </div>
+
+        <!-- ลายน้ำแจ้งเวลาอัพเดท (จะแสดงตอนแคปรูป ย้ายมาอยู่ใต้ตาราง) -->
+        <div class="hidden print-logo text-right mt-4 pr-2 text-gray-500 text-sm font-medium">
+            อัพเดทล่าสุดเมื่อ: <span id="timestamp"></span>
+        </div>
+
+        </div> <!-- ปิด div id="capture-area" -->
 
         <!-- ปุ่มสำหรับบันทึกรูปภาพ (Floating Button มุมขวาล่าง) -->
         <button onclick="downloadAsImage()" id="downloadBtn" class="fixed bottom-6 right-6 z-50 hidden flex items-center gap-2 px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 font-medium border-2 border-white">
@@ -266,12 +268,11 @@
                 // ซ่อนปุ่ม และจัดเตรียมพื้นที่ให้สวยงามก่อนถ่ายภาพ
                 btn.style.display = 'none'; 
                 watermark.classList.remove('hidden'); // แสดงเวลาที่อัพเดทรูปล่างตาราง
-                captureArea.classList.add('capture-mode'); // เพิ่ม padding สีขาว
-                captureArea.style.borderRadius = '0'; // ลบมุมโค้งเพื่อภาพที่เต็มกรอบ
+                captureArea.classList.add('capture-mode'); // เพิ่ม padding และเปลี่ยนสีพื้นหลังให้สวยงาม
                 
                 html2canvas(captureArea, {
                     scale: 2, // ความคมชัด 2 เท่า (Retina Display)
-                    backgroundColor: "#ffffff",
+                    backgroundColor: "#f3f4f6", // สีพื้นหลังเทาอ่อนเหมือนหน้าเว็บ
                     useCORS: true,
                     logging: false,
                     windowWidth: 1200 // ล็อกความกว้างจำลองเพื่อป้องกันเลย์เอาต์มือถือเพี้ยน
@@ -297,7 +298,6 @@
                     btn.classList.remove('cursor-wait');
                     watermark.classList.add('hidden');
                     captureArea.classList.remove('capture-mode');
-                    captureArea.style.borderRadius = '1rem';
                 });
             }, 300);
         }
